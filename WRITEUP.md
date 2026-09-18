@@ -12,17 +12,17 @@ here; the words are yours.
 Give these to Claude before any analysis runs. One sentence each, plus one sentence on why you
 think so.
 
-**(1) A movie you know well, and what its three most-used tags will be:** XXXX
+**(1) A movie you know well, and what its three most-used tags will be:** Dirty Dancing and its tags would be dance, romance, and music.
 
-**(1) Why you think so:** XXXX
+**(1) Why you think so:** The movie is about a romance between Baby, a wealthy girl on vacation with her family, and Johnny, her dance instructor at the vacation resort. Their relationship grows through their many shared dances paired with a wonderful soundtrack.
 
-**(2) Out of every 100 people who rated movies here, how many ever added a tag?** XXXX
+**(2) Out of every 100 people who rated movies here, how many ever added a tag?** 15
 
-**(2) Why you think so:** XXXX
+**(2) Why you think so:** I think it would be a small number of people, and I would only except real cinephiles to rate a movie. But, the site is for people who like movies. So, I would say between 10 and 20 percent.
 
-**(3) Can one person's tags take over a movie's tag list? Yes or no:** XXXX
+**(3) Can one person's tags take over a movie's tag list? Yes or no:** Yes
 
-**(3) Why you think so:** XXXX
+**(3) Why you think so:** I think if they use words that are commonly used across multiple movies. A rare tag would not be too helpful in cross checking themes to build a recommendation.
 
 ## Part 1. Whose data is this?
 
