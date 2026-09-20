@@ -28,17 +28,17 @@ think so.
 
 Code: `part1_data.py`.
 
-**My rule for cutting 32 million ratings to 5 million** (written before reading `data/make_compact.py`)**:** XXXX
+**My rule for cutting 32 million ratings to 5 million** (written before reading `data/make_compact.py`)**:** Keep movies with at least 20 ratings, users with at least 20 ratings, and movies with at least 20 tags.
 
-**One rule I considered and rejected, and why:** XXXX
+**One rule I considered and rejected, and why:** I considered making the rule a threshold higher, or adding the number of ratings per user. But, we can assume empty ratings with enough data from other users. So, I left it out.
 
-**One interesting thing from `data/README.md`:** XXXX
+**One interesting thing from `data/README.md`:** One interesting thing from data/README.md, was the fact that the density of the ratings for movies in the dataset sounds very small at 0.19%. It goes to show how recommendation systems do not have a lot of information to work with.
 
-**How the script's rule differs from mine, and what each keeps that the other drops:** XXXX
+**How the script's rule differs from mine, and what each keeps that the other drops:** The script's rule differs from my slot by focusing on user eligibility instead of density of ratings per movie. I think it does a good job at checking eligible tags per movie.
 
-**First check. Which of Claude's numbers, the different route you took, and whether it matched** (one good target: 6 tags are the literal text `NA`, which pandas drops unless told not to)**:** XXXX
+**First check. Which of Claude's numbers, the different route you took, and whether it matched** (one good target: 6 tags are the literal text `NA`, which pandas drops unless told not to)**:** The first of the 'two checks' automatically drops NAs with pandas, so the number of tags under the literal name 'NA' were found using helpers. The second route opens data/tags.csv.gz directly and counts and sums the tags 'NA'. Both routes produced the same result.
 
-**Second check. Which of Claude's numbers, the different route you took, and whether it matched:** XXXX
+**Second check. Which of Claude's numbers, the different route you took, and whether it matched:** The number was 15.625% consistent across both checks. The first route takes the length of ratings and divides it by the number of all ratings in MovieLens. The second route directly opens data/ratings.csv.gz and manually sums up the number of rows in ratings. Then, it divides it by 32000204. It also checks to ensure that len(ratings) is the same number as the manual count. So, it produces the same result.
 
 ## Part 2. What tags best describe a movie?
 
