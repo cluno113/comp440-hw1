@@ -83,19 +83,146 @@ and what it must write:
         disagreements mean, is your paragraph in `WRITEUP.md`.
 """
 
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
 from load_data import load_all
+
+FIGURES = Path(__file__).resolve().parent / "figures"
+
+
+MOVIE_ID = 1088  # Dirty Dancing (1987)
+
+# The student's rule, from the "My definition" slots in WRITEUP.md. A space, a hyphen or an
+# apostrophe (straight or curly) makes a tag more than one word, and it is dropped.
+SPLITS = r"[\s\-'’]"
+PREFIX = 4
+
+
+def clean(tags_df):
+    """One row per movie and raw tag string that survives, with the group it merges into.
+
+    Columns: movieId, raw, lower, count (applications of that raw string), key (the group).
+    """
+    t = tags_df[["movieId", "tag"]].astype({"tag": str})
+    t = t[~t["tag"].str.contains(SPLITS, regex=True)]
+    raw = t.groupby(["movieId", "tag"]).size().rename("count").reset_index()
+    raw = raw.rename(columns={"tag": "raw"})
+    raw["lower"] = raw["raw"].str.lower()
+    # Under four letters: not in the merge, so each is its own group.
+    short = raw["lower"].str.len() < PREFIX
+    raw["key"] = raw["lower"].str[:PREFIX].where(~short, "<4:" + raw["lower"])
+    return raw
+
+
+def score(tags_df, ratings_df, movies_df):
+    raw = clean(tags_df)
+    # Same word, different case: average the counts, keep it lowercase.
+    words = raw.groupby(["movieId", "key", "lower"])["count"].mean().reset_index()
+    # Within a group, only the shortest length remains.
+    length = words["lower"].str.len()
+    words = words[length == length.groupby([words.movieId, words.key]).transform("min")]
+    # Different words tied for shortest: average the counts, keep the more popular name.
+    # (If they are also tied on count, the alphabetically first name is kept.)
+    words = words.sort_values(["movieId", "key", "count", "lower"],
+                              ascending=[True, True, False, True])
+    out = words.groupby(["movieId", "key"]).agg(tag=("lower", "first"),
+                                                score=("count", "mean")).reset_index()
+    return out[["movieId", "tag", "score"]]
 
 
 def part2_tags(ratings, tags, movies, links):
-    print("part 2 unimplemented")  # delete this line when you start
-
     print("== (1) the obvious answer ==")
+    title = movies.set_index("movieId").loc[MOVIE_ID, "title"]
+    movie_ratings = ratings[ratings.movieId == MOVIE_ID]
+    movie_tags = tags[tags.movieId == MOVIE_ID]
+    print(f"{title}: {len(movie_ratings)} ratings, {len(movie_tags)} tag applications")
+    for tag, count in movie_tags["tag"].value_counts().items():
+        print(f"{count:4d}  {tag}")
 
     print("== (2) up close ==")
+    r_month = pd.to_datetime(movie_ratings.timestamp, unit="s").dt.to_period("M")
+    t_month = pd.to_datetime(movie_tags.timestamp, unit="s").dt.to_period("M")
+    ratings_by_month = r_month.value_counts().sort_index()
+    tags_by_month = t_month.value_counts().sort_index()
+    full_index = pd.period_range(
+        min(ratings_by_month.index.min(), tags_by_month.index.min()),
+        max(ratings_by_month.index.max(), tags_by_month.index.max()),
+        freq="M",
+    )
+    ratings_by_month = ratings_by_month.reindex(full_index, fill_value=0)
+    tags_by_month = tags_by_month.reindex(full_index, fill_value=0)
+    print("ratings per month: first 5")
+    print(ratings_by_month.head())
+    print("tag applications per month: first 5")
+    print(tags_by_month.head())
+
+    x = full_index.to_timestamp()
+    fig, ax = plt.subplots(figsize=(9, 5), facecolor="#fcfcfb")
+    ax.set_facecolor("#fcfcfb")
+    ax.fill_between(x, ratings_by_month.values, color="#eb6834", alpha=0.35,
+                     label="ratings per month")
+    ax.plot(x, tags_by_month.values, color="#2a78d6", linewidth=2,
+             label="tag applications per month")
+    ax.set_xlabel("Month")
+    ax.set_ylabel("Count per month")
+    ax.grid(True, color="#e1e0d9", linewidth=0.8)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.spines[["left", "bottom"]].set_color("#c3c2b7")
+    ax.tick_params(colors="#898781")
+    ax.legend(frameon=False)
+    fig.suptitle(f"{title}: when did tag applications arrive, relative to ratings?",
+                 fontsize=11, color="#0b0b0b")
+    fig.tight_layout()
+    FIGURES.mkdir(exist_ok=True)
+    fig.savefig(FIGURES / "part2_when.png", dpi=150)
+    plt.close(fig)
+    print(f"wrote {FIGURES / 'part2_when.png'}")
+
+    print("-- who added each tag --")
+    total_apps = len(movie_tags)
+    by_user = movie_tags.groupby("userId").size().sort_values(ascending=False)
+    for user_id, count in by_user.head(10).items():
+        print(f"user {user_id}: {count} applications, {count / total_apps:.1%} of {total_apps}")
+
+    print("-- how the taggers rated it --")
+    top_tags = movie_tags["tag"].value_counts().head(10).index
+    ratings_indexed = movie_ratings.set_index("userId")["rating"]
+    for tag in top_tags:
+        taggers = set(movie_tags.loc[movie_tags.tag == tag, "userId"])
+        tagger_ratings = ratings_indexed[ratings_indexed.index.isin(taggers)]
+        other_ratings = ratings_indexed[~ratings_indexed.index.isin(taggers)]
+        print(f"{tag}: taggers mean {tagger_ratings.mean():.2f} (n={len(tagger_ratings)}), "
+              f"everyone else mean {other_ratings.mean():.2f} (n={len(other_ratings)})")
 
     print("== (3) my definition ==")
+    scores = score(tags, ratings, movies)
+    mine = scores[scores.movieId == MOVIE_ID].sort_values(["score", "tag"],
+                                                          ascending=[False, True])
+    print(f"{title}: top 15 by score()")
+    for row in mine.head(15).itertuples():
+        print(f"{row.score:7.1f}  {row.tag}")
+    print(f"whole set: {len(scores)} rows over {scores.movieId.nunique()} movies")
 
     print("== (4) cleaning ==")
+    raw_all = tags[["movieId", "tag"]].astype({"tag": str}).drop_duplicates()
+    kept = clean(tags)
+    print(f"raw movie-tag strings in: {len(raw_all)} "
+          f"({raw_all.tag.nunique()} distinct strings)")
+    print(f"dropped as more than one word: {len(raw_all) - len(kept)}")
+    print(f"movie-tag pairs out: {len(scores)} ({scores.tag.nunique()} distinct tags)")
+    # A merger is a group that folded more than one raw string into one tag.
+    sizes = kept.groupby(["movieId", "key"]).agg(strings=("raw", "size"),
+                                                 applications=("count", "sum"),
+                                                 members=("raw", lambda s: ", ".join(sorted(s))))
+    sizes = sizes[sizes.strings > 1].sort_values("applications", ascending=False)
+    names = movies.set_index("movieId")["title"]
+    print("five mergers that absorbed the most applications:")
+    for (movie_id, _), row in sizes.head(5).iterrows():
+        print(f"  {names.get(movie_id, movie_id)}: {row.applications} applications "
+              f"from {row.members}")
 
     print("== (5) scores.csv ==")
 

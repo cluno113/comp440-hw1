@@ -44,35 +44,35 @@ Code: `part1_data.py`.
 
 Code: `part2_tags.py`.
 
-**My movie, and why I picked it:** XXXX
+**My movie, and why I picked it:** Dirty Dancing. I chose this movie because it is a favorite of mine.
 
-**Its most misleading tag in the count-ordered list, and why it misleads:** XXXX
+**Its most misleading tag in the count-ordered list, and why it misleads:** '80's classic' is not wrong, but it could be misleading as this tag alludes to its release in the 1980s. But, the movie is set to take place in 1963.
 
-**What I learned about how MovieLens collects ratings and tags, from rating and tagging my movie myself (about 100 words):** XXXX
+**What I learned about how MovieLens collects ratings and tags, from rating and tagging my movie myself (about 100 words):** I learned that MovieLens collects ratings and tags from user-based input. It doesn't check whether the given tags are misleading, it trusts its users. I have gone on the actual site to view how the tags are displayed to allow a user to filter through to what kinds of movies they are interested in. I have learned that tags exist in phrases, not only single adjectives.
 
 ### Up close
 
 One sentence on the figure written before you saw it and one after. The two tables are where the
 details below come from. Say which script made them.
 
-**The figure, when the tags and the ratings arrived. What I expected:** XXXX
-**The figure, what it shows:** XXXX
+**The figure, when the tags and the ratings arrived. What I expected:** I honestly think month would not matter for Dirty Dancing because its not related to seasons, maybe a spike in the summer time because it takes place in the summer?
+**The figure, what it shows:** The figure shows the spread of user ratings compared to user tags for the movie Dirty Dancing. With the timespan on the x, we can see the yearly progression (decipherable as months) of ratings and tags. The figure hows significant increase in tags throughout the years over ratings. It goes to show that users are favoring tagging over rating.
 
-**Two interesting details I learned up close that the counts did not show:** XXXX
+**Two interesting details I learned up close that the counts did not show:** One interesting detail I learned is that taggers generally rate the movie higher than the mean. It goes to show that interest plays a large role in user interaction. Another interesting detail was from the tag 'cheesy'. It showed a low tagger mean of 2.11 and everyone else 3.19. This goes to reveal how some taggers are interacting with a movie they did not find interesting, perhaps to better the recommendations they receive going forward.
 
-**Anything up close that contradicted something I had already written down. Which one, what the data showed, and what you now think. Or "nothing yet":** XXXX
+**Anything up close that contradicted something I had already written down. Which one, what the data showed, and what you now think. Or "nothing yet":** I think attributing a movie to a time period is tricky when you are trying to compare when it was released, when it was popular, or when the movie takes place. I find contradictions in my own rankings of the tags as I put 1960s at the very bottom (when the movie takes place) versus the 80s (when the movie came up and was perceived to be popular).
 
 ### My definition
 
-**My `score(movie, tag)`** (one or two sentences, precise enough that a classmate could code it)**:** XXXX
+**My `score(movie, tag)`** (one or two sentences, precise enough that a classmate could code it)**:** Drop all tags with more than one word and find the most popular one. A hyphen or an apostrophe should split a tag.
 
-**One definition I considered and rejected, and why:** XXXX
+**One definition I considered and rejected, and why:** One definition I considered was to just look at popularity, but I feel like one word tags are strong in conveying a description. I am looking for adjectives that look into generalizing themes of movies.
 
-**Which tags I merged as the same tag, which I kept apart, and why:** XXXX
+**Which tags I merged as the same tag, which I kept apart, and why:** I would merge tags such as dance and dancing, because they mean the same thing. I would choose the shorter of each. So, if tags have the same four letters to begin with, I would merge them. Make sure capital and lowercase letters count as the same. When two tags merge, it should keep the count of the shorter tag. For a tag with fewer than four letters, it would not be considered in the merge, but stay with its original tag popularity count and considered to win. It would remain as a contender for 'best' tag, it would keep its original tag count. The tag with the shortest length will be the only one that remains. Its score would remain the count for the shortest tag. It will take the average tag count of the two and keep it in lowercase format. It should keep whichever one is more popular in tag count. My rule takes away tags that are longer than one word. As a user, I would feel that long tags would make it hard to easily generalize and categorize a movie. I think a short descriptive adjective or noun would better suit a movie recommending system.
 
 **Why my definition, in about 150 words. Name one thing it gains and one thing it loses:**
 
-XXXX
+One thing my score gains is simplicity and its straight forward outputs make it easy to compare with other movies that fall under the same tags. It loses variety and creativity in tagging as one tag 'coming of age' was one that I felt described Dirty Dancing well. But, it is too long and not super necessary to categorize the general themes of Dirty Dancing.
 
 ### The judge
 
@@ -86,7 +86,7 @@ XXXX
 
 **My own order of the ten most-used tags, written before looking at any data: my movie from step 1, then my nine others from step 4:**
 
-XXXX
+1088: 80's classic, dancing, dance, romance, Patrick Swayze, music, cheesy, teen movie, coming of age, 1960s
 
 **One criterion I considered for the judge and rejected, and why** (the one I used is in `judge/criterion.md`)**:** XXXX
 
