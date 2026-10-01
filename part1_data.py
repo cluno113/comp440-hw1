@@ -72,6 +72,12 @@ def part1_data(ratings, tags, movies, links):
     raters_who_tagged = raters & taggers
     print(f"raters who ever applied a tag: {len(raters_who_tagged)} "
           f"({len(raters_who_tagged) / len(raters):.4%} of {len(raters)} raters)")
+    # Prediction (3): on each movie, the largest share of its tag applications by one person.
+    per_pair = tags.groupby(["movieId", "userId"]).size()
+    top_share = (per_pair / per_pair.groupby(level=0).transform("sum")).groupby(level=0).max()
+    print(f"largest one-person share of a movie's tag applications, over {len(top_share)} "
+          f"movies: median {top_share.median():.3f}, max {top_share.max():.3f}")
+    print(f"movies where one person made more than half: {int((top_share > 0.5).sum())}")
 
     print("== (c) top tags, two ways ==")
     by_applications = tags["tag"].value_counts()

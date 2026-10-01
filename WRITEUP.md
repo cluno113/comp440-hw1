@@ -66,7 +66,7 @@ details below come from. Say which script made them.
 
 **My `score(movie, tag)`** (one or two sentences, precise enough that a classmate could code it)**:** It does the most work by merging words that begin with the same four letters. It ensures that there are no duplicates of the same word like dance and dancing.
 
-**One definition I considered and rejected, and why:** One definition I considered was to just look at popularity, but I feel like one word tags are strong in conveying a description. I am looking for adjectives that look into generalizing themes of movies.
+**One definition I considered and rejected, and why:** One definition I considered was to just look at popularity. I think my original goal of finding distinct tags was to choose tags that were descriptions of the movie. I wanted to avoid names falling to the top of the list, or scene specific tag applications. I realized that there were some descriptions such as 'dark comedy' for Fargo that incoporated multiple words that captured a good sense of the movie, so I adapted my prompts.
 
 **Which tags I merged as the same tag, which I kept apart, and why:** I would merge tags such as dance and dancing, because they mean the same thing. I would choose the shorter of each. So, if tags have the same four letters to begin with, I would merge them. Make sure capital and lowercase letters count as the same. When two tags merge, it should keep the count of the shorter tag. For a tag with fewer than four letters, it would not be considered in the merge, but stay with its original tag popularity count and considered to win. It would remain as a contender for 'best' tag, it would keep its original tag count. The tag with the shortest length will be the only one that remains. Its score would remain the count for the shortest tag. It will take the average tag count of the two and keep it in lowercase format. It should keep whichever one is more popular in tag count. I like the concept of the four-letter merge because it reduces redundancy in the tags. I find it to better produce an encompassing result of a list for tags.
 
@@ -112,15 +112,15 @@ An order line looks like `296: nonlinear, hit men, dark comedy, ...`, the tags b
 
 **How the judge skill is built: the files it is made of and what each one does (about 150 words):**
 
-XXXX
+The judge skill seems to be built off of my inputs on this homework. It is curated to speak through a facilitator (directed through SKILL.md, system.md, criterion.md, and judge.py) to create outputs that get written into ratings_movies.csv. It gives me an interpretation of what my words direct into Claude.
 
 **What happens when I run `/judge`, from the first check to the CSV (about 150 words):**
 
-XXXX
+The first check to the csv uses criterion.md to rate movies in movies.csv. Then, it rolls through the 110 movies and forms ratings from 1-5 on each tag rating, holding it in ratings_movies.csv. It ensures that no movies or tags come up short.
 
 **Why a skill: what a skill like this gives you that a script or a prompt alone does not, and where you would use one next (about 100 words):**
 
-XXXX
+The skill ensures that the judge stays in line of the prompts I feed into criterion.md. It makes sure that the judge produces an output that fall under the expectations of the README.md and system.md. I would use a skill like this when I am trying to produce a system that will be used by other people's inputs. I think it tests the prompts and code under different user directions making it foolproof.
 
 ### The viewer and the disagreements
 
@@ -149,7 +149,7 @@ the judge put it, and what you think accounts for the gap.
 
 ## Predictions revisited
 
-**Which of my three predictions were wrong, and what I make of each miss:** XXXX
+**Which of my three predictions were wrong, and what I make of each miss:** Honestly, my predictions were wrong with the data being well dispersed across user inputs. But, I think it is interesting that there are 772 movies where one person made more than half of the tag applications. I am assuming it comes from unpopular movies. This data comes from part1_data.py.
 
 ## Part 3. What tags best describe a user?
 
