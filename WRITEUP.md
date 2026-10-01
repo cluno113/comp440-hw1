@@ -124,28 +124,28 @@ XXXX
 
 ### The viewer and the disagreements
 
-**One thing `movie_results.html` showed me that was useful, and one thing about it that got in my way:** XXXX
+**One thing `movie_results.html` showed me that was useful, and one thing about it that got in my way:** I found the comparison table of my scores and the judge's score super helpful as it helped me see differences in our methods. But, I thought having all of the tags displayed was unnecessary.
 
 Then three improvements. For each: what the page would not let you see, what you had Claude
 change, and what the changed page shows that the first draft did not.
 
-**Improvement 1:** XXXX
+**Improvement 1:** The page wouldn't let me see comparisons across the list. So, I had it change the layout of how the terms were displayed to be side by side. The changed page shows the lists side by side.
 
-**Improvement 2:** XXXX
+**Improvement 2:** The page wouldn't let me see only the important information by putting in long lists of all of the data. I had them change this by deleting it fully. The changes made it so that the page was easier to navigate.
 
-**Improvement 3:** XXXX
+**Improvement 3:** The page doesn't show direct comparisons across all of the lists. I asked it to highlight terms that matched across all the lists. It made it nice to see how the different lists ranked the same tags.
 
 Then the three disagreements. A disagreement is a movie and a tag where your `score()` and the
 judge are furthest apart. For each: the movie and the tag, where your `score()` put it and where
 the judge put it, and what you think accounts for the gap.
 
-**Disagreement 1:** XXXX
+**Disagreement 1:** I disagree with Dirty Dancing's music tag. My score put the tag 1, while the judge put it at 15. The judge's list accounts for this with 'great soundtrack' scoring highly.
 
-**Disagreement 2:** XXXX
+**Disagreement 2:** I disagree with Silence of the Lambs 'investigation' tag. My score put it at 11 while the judge put it at 51. Nothing accounts to cover the plot of this movie. But, other tags like 'disturbing' or 'suspense' make up for it.
 
-**Disagreement 3:** XXXX
+**Disagreement 3:** In Fargo, 'loneliness' is ranked 31st on my score while the judge ranked it 4th. I think this tag is not very encompassing of the themes in the movie and you can see it's unpopularity in the count score.
 
-**One other high-level pattern in the results, and what you think is behind it:** XXXX
+**One other high-level pattern in the results, and what you think is behind it:** A pattern I see is that at least two tags appear to be common among the top 10 across all the generated lists. I think behind it is the popularity, or count of each tag and that ensures that those terms stay in higher ranks.
 
 ## Predictions revisited
 

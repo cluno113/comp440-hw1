@@ -51,7 +51,10 @@ DEFINITION = ("A disagreement is a movie-tag pair whose rank under score() and i
               "broken alphabetically." % GAP)
 CSS = """body { font-family: Helvetica, Arial, sans-serif; margin: 20px; }
 table { border-collapse: collapse; margin-bottom: 12px; }
-th, td { border: 1px solid #999999; padding: 4px 8px; text-align: left; }"""
+th, td { border: 1px solid #999999; padding: 4px 8px; text-align: left; }
+.cols { display: flex; flex-wrap: wrap; gap: 24px; }
+.col { flex: 1 1 180px; min-width: 0; }
+.shared { background: #fff1a8; }"""
 
 
 def as_date(stamp):
@@ -161,10 +164,21 @@ def table_html(headers, rows):
     return "<table><tr>%s</tr>%s</table>" % (head, body)
 
 
-def list_html(tags):
+def list_html(tags, shared=frozenset()):
     if not tags:
         return "<p>not written yet</p>"
-    return "<ol>%s</ol>" % "".join("<li>%s</li>" % html.escape(t) for t in tags)
+    return "<ol>%s</ol>" % "".join(
+        '<li class="shared">%s</li>' % html.escape(t) if t in shared
+        else "<li>%s</li>" % html.escape(t) for t in tags)
+
+
+def shared_tags(movie, at_least=4):
+    """Tags that appear in at least `at_least` of the four rankings, the student's rule."""
+    seen = {}
+    for key in ("counts", "mine", "judge", "score"):
+        for tag in set(movie[key]):
+            seen[tag] = seen.get(tag, 0) + 1
+    return frozenset(t for t, n in seen.items() if n >= at_least)
 
 
 def render(movies):
@@ -172,14 +186,17 @@ def render(movies):
     head = "<title>Results Viewer v0</title>\n<style>\n%s\n</style>" % CSS
     body = ["<h1>Results Viewer</h1>", "<p>%s</p>" % html.escape(DEFINITION)]
     for movie in movies:
+        shared = shared_tags(movie)
         body += [
             "<h2>%s</h2>" % html.escape(movie["title"]),
-            "<h3>By count</h3>", list_html(movie["counts"]),
-            "<h3>Your order</h3>", list_html(movie["mine"]),
-            "<h3>The judge's order</h3>", list_html(movie["judge"]),
-            "<h3>Your score()</h3>", list_html(movie["score"]),
-            "<h3>Tags on this movie</h3>",
-            table_html(["Tag", "User", "Date"], movie["apps"]),
+            '<p><span class="shared">Highlighted</span>: in all four lists.</p>',
+            # The four rankings side by side, one column each.
+            '<div class="cols">',
+            '<div class="col"><h3>By count</h3>%s</div>' % list_html(movie["counts"], shared),
+            '<div class="col"><h3>Your order</h3>%s</div>' % list_html(movie["mine"], shared),
+            '<div class="col"><h3>The judge\'s order</h3>%s</div>' % list_html(movie["judge"], shared),
+            '<div class="col"><h3>Your score()</h3>%s</div>' % list_html(movie["score"], shared),
+            "</div>",
             "<p>%d applications by %d people.</p>" % (len(movie["apps"]), movie["people"]),
             "<h3>Biggest disagreements, score() against the judge</h3>",
             table_html(["Tag", "score() rank", "Judge rank"], movie["gaps"]),
@@ -217,8 +234,6 @@ def render_text(movies):
                 "  Your order", numbered(movie["mine"]),
                 "  The judge's order", numbered(movie["judge"]),
                 "  Your score()", numbered(movie["score"]),
-                "  Tags on this movie",
-                table_text(["Tag", "User", "Date"], movie["apps"]),
                 "  %d applications by %d people." % (len(movie["apps"]), movie["people"]),
                 "  Biggest disagreements, score() against the judge",
                 table_text(["Tag", "score() rank", "Judge rank"], movie["gaps"]), ""]
