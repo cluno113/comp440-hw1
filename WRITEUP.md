@@ -64,15 +64,15 @@ details below come from. Say which script made them.
 
 ### My definition
 
-**My `score(movie, tag)`** (one or two sentences, precise enough that a classmate could code it)**:** Drop all tags with more than one word and find the most popular one. A hyphen or an apostrophe should split a tag.
+**My `score(movie, tag)`** (one or two sentences, precise enough that a classmate could code it)**:** It does the most work by merging words that begin with the same four letters. It ensures that there are no duplicates of the same word like dance and dancing.
 
 **One definition I considered and rejected, and why:** One definition I considered was to just look at popularity, but I feel like one word tags are strong in conveying a description. I am looking for adjectives that look into generalizing themes of movies.
 
-**Which tags I merged as the same tag, which I kept apart, and why:** I would merge tags such as dance and dancing, because they mean the same thing. I would choose the shorter of each. So, if tags have the same four letters to begin with, I would merge them. Make sure capital and lowercase letters count as the same. When two tags merge, it should keep the count of the shorter tag. For a tag with fewer than four letters, it would not be considered in the merge, but stay with its original tag popularity count and considered to win. It would remain as a contender for 'best' tag, it would keep its original tag count. The tag with the shortest length will be the only one that remains. Its score would remain the count for the shortest tag. It will take the average tag count of the two and keep it in lowercase format. It should keep whichever one is more popular in tag count. My rule takes away tags that are longer than one word. As a user, I would feel that long tags would make it hard to easily generalize and categorize a movie. I think a short descriptive adjective or noun would better suit a movie recommending system.
+**Which tags I merged as the same tag, which I kept apart, and why:** I would merge tags such as dance and dancing, because they mean the same thing. I would choose the shorter of each. So, if tags have the same four letters to begin with, I would merge them. Make sure capital and lowercase letters count as the same. When two tags merge, it should keep the count of the shorter tag. For a tag with fewer than four letters, it would not be considered in the merge, but stay with its original tag popularity count and considered to win. It would remain as a contender for 'best' tag, it would keep its original tag count. The tag with the shortest length will be the only one that remains. Its score would remain the count for the shortest tag. It will take the average tag count of the two and keep it in lowercase format. It should keep whichever one is more popular in tag count. I like the concept of the four-letter merge because it reduces redundancy in the tags. I find it to better produce an encompassing result of a list for tags.
 
 **Why my definition, in about 150 words. Name one thing it gains and one thing it loses:**
 
-One thing my score gains is simplicity and its straight forward outputs make it easy to compare with other movies that fall under the same tags. It loses variety and creativity in tagging as one tag 'coming of age' was one that I felt described Dirty Dancing well. But, it is too long and not super necessary to categorize the general themes of Dirty Dancing.
+My definition gains the benefit of reducing redundancy and highlighting popularity. It may lose generalization of the movie's feeling with tags that are specific to movie release or famous actors.
 
 ### The judge
 
@@ -106,9 +106,9 @@ An order line looks like `296: nonlinear, hit men, dark comedy, ...`, the tags b
 4262: mafia, gangsters, crime, drugs, violence, Al Pacino, atmospheric, organized crime, corruption, classic
 6711: bittersweet, loneliness, Melancholic, Japan, Scarlett Johansson, Bill Murray, atmospheric, reflective, complex characters, visually appealing
 
-**One criterion I considered for the judge and rejected, and why** (the one I used is in `judge/criterion.md`)**:** XXXX
+**One criterion I considered for the judge and rejected, and why** (the one I used is in `judge/criterion.md`)**:** One criterion I reject is taking out descriptions of tags that contain more than one word. Because some tags include phrases that help the user contextualize plot.
 
-**Agreement. The number `agreement.py` gives for your `score()`, for popularity and for your own order, and which of the three came closest to the judge:** XXXX
+**Agreement. The number `agreement.py` gives for your `score()`, for popularity and for your own order, and which of the three came closest to the judge:** The score() was 2.19, the popularity was 2.17, my own order was 1.9, and the best possible was 3.92. The best possible ranking was a 3.92 meaning that for each movie, that is the highest score a movie could get based on the judge's ratings. Out of the three, my score() came closest to the judge.
 
 **How the judge skill is built: the files it is made of and what each one does (about 150 words):**
 

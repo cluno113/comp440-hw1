@@ -83,22 +83,25 @@ and what it must write:
         disagreements mean, is your paragraph in `WRITEUP.md`.
 """
 
+import re
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from agreement import my_order_lines
 from load_data import load_all
 
-FIGURES = Path(__file__).resolve().parent / "figures"
+REPO = Path(__file__).resolve().parent
+FIGURES = REPO / "figures"
 
 
 MOVIE_ID = 1088  # Dirty Dancing (1987)
 
-# The student's rule, from the "My definition" slots in WRITEUP.md. A space, a hyphen or an
-# apostrophe (straight or curly) makes a tag more than one word, and it is dropped.
-SPLITS = r"[\s\-'’]"
+# The student's rule, from the "My definition" slots in WRITEUP.md. Multi-word tags are kept
+# and go through the same four-letter merge as one-word tags.
 PREFIX = 4
+SHOW = 5  # tags per list in section (6), the student's choice
 
 
 def clean(tags_df):
@@ -107,7 +110,6 @@ def clean(tags_df):
     Columns: movieId, raw, lower, count (applications of that raw string), key (the group).
     """
     t = tags_df[["movieId", "tag"]].astype({"tag": str})
-    t = t[~t["tag"].str.contains(SPLITS, regex=True)]
     raw = t.groupby(["movieId", "tag"]).size().rename("count").reset_index()
     raw = raw.rename(columns={"tag": "raw"})
     raw["lower"] = raw["raw"].str.lower()
@@ -118,6 +120,11 @@ def clean(tags_df):
 
 
 def score(tags_df, ratings_df, movies_df):
+    return groups(tags_df)[["movieId", "tag", "score"]]
+
+
+def groups(tags_df):
+    """score() with the merge group kept: one row per movie and group, named by its winner."""
     raw = clean(tags_df)
     # Same word, different case: average the counts, keep it lowercase.
     words = raw.groupby(["movieId", "key", "lower"])["count"].mean().reset_index()
@@ -130,7 +137,27 @@ def score(tags_df, ratings_df, movies_df):
                               ascending=[True, True, False, True])
     out = words.groupby(["movieId", "key"]).agg(tag=("lower", "first"),
                                                 score=("count", "mean")).reset_index()
-    return out[["movieId", "tag", "score"]]
+    return out[["movieId", "key", "tag", "score"]]
+
+
+def ten_movies():
+    """The movieIds in the "My ten movies" slot of WRITEUP.md, in the order written."""
+    slot = (REPO / "WRITEUP.md").read_text(encoding="utf-8").split("**My ten movies")[-1]
+    return [int(n) for n in re.findall(r"^\s*(\d+)", slot.split("\n**")[0], re.M)]
+
+
+def asked_pairs():
+    """Every movie and tag the judge is asked about: judge/movies.csv, plus the vocabulary
+    tags on the ten movies in the "My ten movies" slot, stripped and lowercased."""
+    shipped = pd.read_csv(REPO / "judge" / "movies.csv", keep_default_na=False)
+    shipped = (shipped.assign(tag=shipped["tags"].str.split("|")).explode("tag")
+               .rename(columns={"id": "movieId"})[["movieId", "tag"]])
+    mine = ten_movies()
+    words = {t.strip() for t in (REPO / "judge" / "vocabulary.txt").read_text().splitlines()}
+    raw = pd.read_csv(REPO / "data" / "tags.csv.gz", keep_default_na=False)
+    raw = raw.assign(tag=raw["tag"].astype(str).str.strip().str.lower())
+    on_mine = raw[raw.movieId.isin(mine) & raw.tag.isin(words)][["movieId", "tag"]]
+    return pd.concat([shipped, on_mine]).drop_duplicates().reset_index(drop=True)
 
 
 def part2_tags(ratings, tags, movies, links):
@@ -211,7 +238,7 @@ def part2_tags(ratings, tags, movies, links):
     kept = clean(tags)
     print(f"raw movie-tag strings in: {len(raw_all)} "
           f"({raw_all.tag.nunique()} distinct strings)")
-    print(f"dropped as more than one word: {len(raw_all) - len(kept)}")
+    print(f"dropped: {len(raw_all) - len(kept)}")
     print(f"movie-tag pairs out: {len(scores)} ({scores.tag.nunique()} distinct tags)")
     # A merger is a group that folded more than one raw string into one tag.
     sizes = kept.groupby(["movieId", "key"]).agg(strings=("raw", "size"),
@@ -225,8 +252,43 @@ def part2_tags(ratings, tags, movies, links):
               f"from {row.members}")
 
     print("== (5) scores.csv ==")
+    # A tag the judge asks about by its own name gets the score of the group it merged into.
+    asked = asked_pairs()
+    g = groups(tags)
+    member = clean(tags)
+    member["tag"] = member["lower"].str.strip()
+    member = member[["movieId", "tag", "key"]].drop_duplicates()
+    out = (asked.merge(member, on=["movieId", "tag"], how="left")
+           .merge(g[["movieId", "key", "score"]], on=["movieId", "key"], how="left"))
+    written = out.dropna(subset=["score"])[["movieId", "tag", "score"]]
+    written = written.drop_duplicates(["movieId", "tag"])
+    written.to_csv(REPO / "scores.csv", index=False)
+    print(f"asked for: {len(asked)} movie-tag pairs over {asked.movieId.nunique()} movies")
+    print(f"wrote: {len(written)} rows to scores.csv")
 
     print("== (6) the four rankings ==")
+    # Ties in the judge's and score()'s lists are broken by tag text, as in section (3).
+    judge = pd.read_csv(REPO / "judge" / "ratings_movies.csv", keep_default_na=False)
+    mine_order = my_order_lines()
+    titles = movies.set_index("movieId")["title"]
+    for movie_id in ten_movies():
+        print(f"\n{titles.get(movie_id, movie_id)}")
+        print("  -- the counts --")
+        counts = tags[tags.movieId == movie_id]["tag"].value_counts().head(SHOW)
+        for tag, n in counts.items():
+            print(f"    {n:4d}  {tag}")
+        print("  -- my own order --")
+        for tag in mine_order.get(movie_id, [])[:SHOW]:
+            print(f"    {tag}")
+        print("  -- the judge's order --")
+        j = judge[judge.id == movie_id].sort_values(["rating", "tag"], ascending=[False, True])
+        for row in j.head(SHOW).itertuples():
+            print(f"    {row.rating}  {row.tag}")
+        print("  -- my score() --")
+        sc = scores[scores.movieId == movie_id].sort_values(["score", "tag"],
+                                                           ascending=[False, True])
+        for row in sc.head(SHOW).itertuples():
+            print(f"    {row.score:7.1f}  {row.tag}")
 
 
 if __name__ == "__main__":
