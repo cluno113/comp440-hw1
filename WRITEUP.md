@@ -82,11 +82,29 @@ An order line looks like `296: nonlinear, hit men, dark comedy, ...`, the tags b
 
 **My ten movies:**
 
-XXXX
+1088, Dirty Dancing (1987)
+60397, Mamma Mia! (2008)
+593, Silence of the Lambs, The (1991)
+608, Fargo (1996)
+6377, Finding Nemo (2003)
+1201, Good, the Bad and the Ugly, The (Buono, il brutto, il cattivo, Il) (1966)
+6539, Pirates of the Caribbean: The Curse of the Black Pearl (2003)
+194448, Green Book (2018)
+4262, Scarface (1983)
+6711, Lost in Translation (2003)
 
 **My own order of the ten most-used tags, written before looking at any data: my movie from step 1, then my nine others from step 4:**
 
 1088: 80's classic, dancing, dance, romance, Patrick Swayze, music, cheesy, teen movie, coming of age, 1960s
+60397: musical, Musical, ABBA, Greece, Meryl Streep, Amanda Seyfried, Colin Firth, Pierce Brosnan, Island, music:ABBA
+593: disturbing, cannibalism, suspense, psychology, psychological, serial killer, Jodie Foster, Anthony Hopkins, great acting, excellent script
+608: crime, quirky, Frances McDormand, Steve Buscemi, dark comedy, dark humor, strong female, Coen Brothers, witty, black comedy
+6377: animation, heartwarming, Disney, funny, Pixar, father-son relationship, underwater, ocean, short-term memory loss, talking animals
+1201: western, classic, spaghetti western, Clint Eastwood, music, epic, Sergio Leone, Ennio Morricone, complex characters, atmospheric
+6539: pirates, adventure, funny, treasure, action, johnny depp, Johnny Depp, comedy, fantasy, sword fight
+194448: touching, friendship, heartwarming, segregation, musician, racism, social commentary, Viggo Mortensen, great acting, based on a true story
+4262: mafia, gangsters, crime, drugs, violence, Al Pacino, atmospheric, organized crime, corruption, classic
+6711: bittersweet, loneliness, Melancholic, Japan, Scarlett Johansson, Bill Murray, atmospheric, reflective, complex characters, visually appealing
 
 **One criterion I considered for the judge and rejected, and why** (the one I used is in `judge/criterion.md`)**:** XXXX
 
