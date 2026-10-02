@@ -51,6 +51,8 @@ GROUP = 20                  # judge/users.csv: this many most and least similar 
 ON_MINE = 10                # a judged tag is on at least this many of your twenty movies
 MIN_PEOPLE = 30             # ...and was applied by at least this many people
 USERS_CSV = REPO / "judge" / "users.csv"
+# Improvement 2, the student's synonym groups. Each group keeps the name with more applications.
+SYNONYMS = [{"great soundtrack", "music"}, {"classic", "cult film"}]
 
 
 def read_my_ratings(writeup: Path = WRITEUP) -> tuple[pd.DataFrame, int]:
@@ -137,10 +139,18 @@ def score(ratings: pd.DataFrame, tags: pd.DataFrame, movies: pd.DataFrame):
     many times they used it. Computed for the people in TARGETS, one against everyone.
 
     Improvement 1: only the tags the judge rates are scored (`judged_tags`), so the score
-    and the judge rank the same set."""
+    and the judge rank the same set. Improvement 2: the tags in each SYNONYMS group count as
+    one, named after the member with more applications."""
     judged = set(judged_tags(tags, ratings[ratings["userId"] == ME]))
-    applied = tag_groups(tags).drop_duplicates()
+    groups = tag_groups(tags)
+    applied = groups.drop_duplicates()
     applied = applied[applied["tag"].isin(judged)]
+    # Improvement 2: synonyms count as one tag, still once per person.
+    uses = groups["tag"].value_counts()
+    for group in SYNONYMS:
+        keep = max(sorted(group), key=lambda t: uses.get(t, 0))
+        applied = applied.assign(tag=applied["tag"].where(~applied["tag"].isin(group), keep))
+    applied = applied.drop_duplicates()
     out = []
     for user in TARGETS:
         sims = similarity(ratings, user).rename("sim")

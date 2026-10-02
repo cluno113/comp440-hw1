@@ -226,7 +226,7 @@ I changed the criterion on how many tags my score() looks at to matched the pool
 
 **Improvement 2: the same (about 150 words):**
 
-XXXX
+I changed the merge rule by adding things like 'great soundtrack' and music to go together, or classic and cult film. This opens up space for a more larger variety of tag applications. It changed my list to include some that are on the judge's list. It made it feel closer to the judge's list by adding violence and adventure to the mix.
 
 ## Part 4. Working with Claude
 
