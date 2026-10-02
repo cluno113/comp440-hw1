@@ -160,15 +160,49 @@ and no numbering, the movieId first and the rating last, as in `296, Pulp Fictio
 
 **My 20 ratings:**
 
-XXXX
+1088, Dirty Dancing (1987), 5.0
+60397, Mamma Mia! (2008), 5.0
+593, Silence of the Lambs, The (1991), 5.0
+608, Fargo (1996), 5.0
+6377, Finding Nemo (2003), 4.0
+1201, Good, the Bad and the Ugly, The (Buono, il brutto, il cattivo, Il) (1966), 4.0
+6539, Pirates of the Caribbean: The Curse of the Black Pearl (2003), 5.0
+194448, Green Book (2018), 5.0
+4262, Scarface (1983), 5.0
+6711, Lost in Translation (2003), 4.0
+2628, Star Wars: Episode I - The Phantom Menace (1999), 5.0
+5378, Star Wars: Episode II - Attack of the Clones (2002), 5.0
+33493, Star Wars: Episode III - Revenge of the Sith (2005), 5.0
+260, Star Wars: Episode IV - A New Hope (1977), 5.0
+1196, Star Wars: Episode V - The Empire Strikes Back (1980), 5.0
+1210, Star Wars: Episode VI - Return of the Jedi (1983), 5.0
+122886, Star Wars: Episode VII - The Force Awakens (2015), 5.0
+179819, Star Wars: The Last Jedi (2017), 5.0
+208205, Star Wars: The Rise of Skywalker (2019), 5.0
+1197, Princess Bride, The (1987), 5.0
 
 **My `score(user, tag)`, in a sentence, and why I started there (about 100 words):**
 
-XXXX
+My score looks at other users compared to me and finds similar users based on raw ratings of other movies. The score is computed for one person against everyone instead of all users against each other. It counts each person once per tag (lowercased and merged to avoid redundancy) and weighs how similar they are to me. I picked it because I am looking for tags that are personalized.
 
 **What my score says about me: my top ten tags, and whether they describe my taste (about 100 words):**
 
-XXXX
+| tag | score |
+| --- | --- |
+| sci-fi | 242.98 |
+| great | 237.74 |
+| dark | 231.56 |
+| visual | 196.01 |
+| psycho | 193.43 |
+| space | 189.79 |
+| actio | 186.32 |
+| atmoshere | 184.50 |
+| twist | 180.41 |
+| class | 173.42 |
+
+Source: `part3_users.py`, section (2).
+
+It makes sense because I put in all of the Star Wars movies. Yes, it describes the taste of the twenty movies I inputted.
 
 **What my user viewer shows and why I chose that (about 100 words):**
 

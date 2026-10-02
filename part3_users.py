@@ -34,7 +34,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+from scipy import sparse
 
 from load_data import load_all
 
@@ -43,6 +45,8 @@ WRITEUP = REPO / "WRITEUP.md"
 
 ME = 999999                 # your userId: above every real one, so it collides with nobody
 SLOT = "My 20 ratings"      # the WRITEUP.md slot your ratings are read from
+TARGETS = [ME]              # the people score() is computed for: one against everyone
+PREFIX = 4                  # the Part 2 merge: tags sharing their first four letters
 
 
 def read_my_ratings(writeup: Path = WRITEUP) -> tuple[pd.DataFrame, int]:
@@ -89,18 +93,57 @@ def add_me(ratings: pd.DataFrame, mine: pd.DataFrame) -> pd.DataFrame:
 
 # ------------------------------------------------------------------- yours to write ---
 
-def score(ratings: pd.DataFrame, tags: pd.DataFrame, movies: pd.DataFrame):
-    """What tags best describe a user. This one is yours; the handout's Part 3, step 2.
+def tag_groups(tags: pd.DataFrame) -> pd.DataFrame:
+    """Each tag application with the merged tag it counts as: userId, tag.
 
-    Return one row per user-tag pair: userId, tag, score, higher meaning the tag describes
-    the user better. Start simply, test it on your own ratings, and improve it twice with
-    what your viewer and your judge show you."""
-    print("score(user, tag) is yours to write")
+    The Part 2 rule, run across all tags rather than within a movie: lowercase, then merge
+    tags that share their first four letters. A tag under four letters stays on its own. A
+    group is named by its shortest member; a tie goes to the more-applied one, then A to Z."""
+    t = tags[["userId", "tag"]].astype({"tag": str})
+    t = t.assign(lower=t["tag"].str.lower())
+    short = t["lower"].str.len() < PREFIX
+    t["key"] = t["lower"].str[:PREFIX].where(~short, "<4:" + t["lower"])
+    names = t.groupby(["key", "lower"]).size().rename("n").reset_index()
+    names = names.assign(length=names["lower"].str.len())
+    names = (names.sort_values(["key", "length", "n", "lower"],
+                               ascending=[True, True, False, True])
+             .drop_duplicates("key").set_index("key")["lower"])
+    return t.assign(tag=t["key"].map(names))[["userId", "tag"]]
+
+
+def similarity(ratings: pd.DataFrame, user: int) -> pd.Series:
+    """Cosine similarity of `user` to every other person, on raw ratings. A movie someone
+    did not rate counts as empty (zero) in their vector."""
+    users = pd.Index(ratings["userId"].unique())
+    films = pd.Index(ratings["movieId"].unique())
+    m = sparse.csr_matrix((ratings["rating"].to_numpy(),
+                           (users.get_indexer(ratings["userId"]),
+                            films.get_indexer(ratings["movieId"]))),
+                          shape=(len(users), len(films)))
+    me = m[users.get_loc(user)]
+    dots = np.asarray((m @ me.T).todense()).ravel()
+    norms = np.sqrt(np.asarray(m.multiply(m).sum(axis=1)).ravel())
+    sims = pd.Series(dots / (norms * norms[users.get_loc(user)]), index=users)
+    return sims.drop(user)
+
+
+def score(ratings: pd.DataFrame, tags: pd.DataFrame, movies: pd.DataFrame):
+    """What tags best describe a user: the student's rule.
+
+    For a person and a tag, add up the cosine similarity (raw ratings) of every other
+    person who applied that tag at least once. Each person counts once per tag, however
+    many times they used it. Computed for the people in TARGETS, one against everyone."""
+    applied = tag_groups(tags).drop_duplicates()
+    out = []
+    for user in TARGETS:
+        sims = similarity(ratings, user).rename("sim")
+        rows = applied[applied["userId"] != user].join(sims, on="userId")
+        got = rows.groupby("tag")["sim"].sum().rename("score").reset_index()
+        out.append(got.assign(userId=user))
+    return pd.concat(out, ignore_index=True)[["userId", "tag", "score"]]
 
 
 def part3_users(ratings, tags, movies, links):
-    print("part 3 unimplemented")  # delete this line when you start
-
     print("== (1) my ratings ==")
     mine, skipped = read_my_ratings()
     print(f'{len(mine)} rating(s) read from the "{SLOT}" slot in WRITEUP.md.')
@@ -118,7 +161,12 @@ def part3_users(ratings, tags, movies, links):
         print(f"{len(ratings):,} ratings, none of them yours yet.")
 
     print("== (2) score(user, tag) ==")
-    score(ratings, tags, movies)
+    scores = score(ratings, tags, movies)
+    top = scores[scores.userId == ME].sort_values(["score", "tag"], ascending=[False, True])
+    print(f"userId {ME}: ten best tags by score()")
+    for row in top.head(10).itertuples():
+        print(f"{row.score:9.2f}  {row.tag}")
+    print(f"{len(scores):,} rows over {scores.userId.nunique()} user(s)")
 
 
 if __name__ == "__main__":
