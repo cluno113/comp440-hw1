@@ -49,7 +49,7 @@ TARGETS = [ME]              # the people score() is computed for: one against ev
 PREFIX = 4                  # the Part 2 merge: tags sharing their first four letters
 GROUP = 20                  # judge/users.csv: this many most and least similar people
 ON_MINE = 10                # a judged tag is on at least this many of your twenty movies
-MIN_PEOPLE = 30             # ...and was applied by more than this many people
+MIN_PEOPLE = 30             # ...and was applied by at least this many people
 USERS_CSV = REPO / "judge" / "users.csv"
 
 
@@ -134,8 +134,13 @@ def score(ratings: pd.DataFrame, tags: pd.DataFrame, movies: pd.DataFrame):
 
     For a person and a tag, add up the cosine similarity (raw ratings) of every other
     person who applied that tag at least once. Each person counts once per tag, however
-    many times they used it. Computed for the people in TARGETS, one against everyone."""
+    many times they used it. Computed for the people in TARGETS, one against everyone.
+
+    Improvement 1: only the tags the judge rates are scored (`judged_tags`), so the score
+    and the judge rank the same set."""
+    judged = set(judged_tags(tags, ratings[ratings["userId"] == ME]))
     applied = tag_groups(tags).drop_duplicates()
+    applied = applied[applied["tag"].isin(judged)]
     out = []
     for user in TARGETS:
         sims = similarity(ratings, user).rename("sim")
@@ -147,12 +152,12 @@ def score(ratings: pd.DataFrame, tags: pd.DataFrame, movies: pd.DataFrame):
 
 def judged_tags(tags: pd.DataFrame, mine: pd.DataFrame) -> list[str]:
     """The tags the judge rates for every person: merged tags on at least ON_MINE of your
-    twenty movies, applied by more than MIN_PEOPLE people."""
+    twenty movies, applied by MIN_PEOPLE or more people."""
     g = tag_groups(tags).assign(movieId=tags["movieId"].to_numpy())
     people = g[["userId", "tag"]].drop_duplicates().groupby("tag").size()
     films = g[g.movieId.isin(mine.movieId)].groupby("tag")["movieId"].nunique()
     keep = films[films >= ON_MINE].index
-    return sorted(t for t in keep if people[t] > MIN_PEOPLE)
+    return sorted(t for t in keep if people[t] >= MIN_PEOPLE)
 
 
 def write_users_csv(ratings, tags, movies, mine) -> pd.DataFrame:

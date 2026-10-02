@@ -206,23 +206,23 @@ It makes sense because I put in all of the Star Wars movies. Yes, it describes t
 
 **What my user viewer shows and why I chose that (about 100 words):**
 
-My viewer shows my tags side by side next to the top ten tags by users across all people. I chose it to see how cosine similarity could show up or influence my tags.
+My viewer shows my tags side by side next to the top ten tags by users across all people. I chose it to see how cosine similarity could show up or influence my tags. I chose that to show how my taste differs from the top tagged tags, but not super. I think it captures how a lot of the movies I mentioned were action movies. But, my list and my judge's recommended list reveals the diversity in movie genre (ie. romance).
 
 **What I put in the description column for a person, and why (about 150 words):**
 
-XXXX
+The description contains the label, movies, stars, and tags per user. I chose the description I gave the judge because I wanted it to prioritize the conciseness I was aiming for in my results while also considering tag counts to make the list feel recognizable to the tags I saw from all of the movies.
 
 **My criterion for people: what it asks the judge to do that the movie criterion did not (about 60 words):**
 
-XXXX
+My criterion for people asks the judge to make concise labels and to be aware of rare tags and adjectives. My movies criterion just looked for conciseness and capturing the movie's feelings.
 
 **The user-tag pairs I chose to judge, how many, and why those (about 100 words):**
 
-XXXX
+I chose those people to provide a contrast of similar users and to also make the scope of users smaller by asking to look for tags applied by more than 30 people. My file has 41 people who are grouped into a similar userbase and a dissimilar user base. My 46 tags are chosen by whether 30 or more people picked them and to include tags across at least 10 of my twenty movies. The combination created 1886 pairs.
 
 **Improvement 1: what I changed in the scoring function, what the judge and the viewer showed before and after (about 150 words):**
 
-XXXX
+I changed the criterion on how many tags my score() looks at to matched the pool of tags the judge was looking at. It changed my score() to better reflect the diversity of movie tags, instead of just looking at Star Wars.
 
 **Improvement 2: the same (about 150 words):**
 
