@@ -47,6 +47,10 @@ ME = 999999                 # your userId: above every real one, so it collides 
 SLOT = "My 20 ratings"      # the WRITEUP.md slot your ratings are read from
 TARGETS = [ME]              # the people score() is computed for: one against everyone
 PREFIX = 4                  # the Part 2 merge: tags sharing their first four letters
+GROUP = 20                  # judge/users.csv: this many most and least similar people
+ON_MINE = 10                # a judged tag is on at least this many of your twenty movies
+MIN_PEOPLE = 30             # ...and was applied by more than this many people
+USERS_CSV = REPO / "judge" / "users.csv"
 
 
 def read_my_ratings(writeup: Path = WRITEUP) -> tuple[pd.DataFrame, int]:
@@ -98,15 +102,13 @@ def tag_groups(tags: pd.DataFrame) -> pd.DataFrame:
 
     The Part 2 rule, run across all tags rather than within a movie: lowercase, then merge
     tags that share their first four letters. A tag under four letters stays on its own. A
-    group is named by its shortest member; a tie goes to the more-applied one, then A to Z."""
+    group is named by its most-applied member; a tie goes A to Z."""
     t = tags[["userId", "tag"]].astype({"tag": str})
     t = t.assign(lower=t["tag"].str.lower())
     short = t["lower"].str.len() < PREFIX
     t["key"] = t["lower"].str[:PREFIX].where(~short, "<4:" + t["lower"])
     names = t.groupby(["key", "lower"]).size().rename("n").reset_index()
-    names = names.assign(length=names["lower"].str.len())
-    names = (names.sort_values(["key", "length", "n", "lower"],
-                               ascending=[True, True, False, True])
+    names = (names.sort_values(["key", "n", "lower"], ascending=[True, False, True])
              .drop_duplicates("key").set_index("key")["lower"])
     return t.assign(tag=t["key"].map(names))[["userId", "tag"]]
 
@@ -143,6 +145,46 @@ def score(ratings: pd.DataFrame, tags: pd.DataFrame, movies: pd.DataFrame):
     return pd.concat(out, ignore_index=True)[["userId", "tag", "score"]]
 
 
+def judged_tags(tags: pd.DataFrame, mine: pd.DataFrame) -> list[str]:
+    """The tags the judge rates for every person: merged tags on at least ON_MINE of your
+    twenty movies, applied by more than MIN_PEOPLE people."""
+    g = tag_groups(tags).assign(movieId=tags["movieId"].to_numpy())
+    people = g[["userId", "tag"]].drop_duplicates().groupby("tag").size()
+    films = g[g.movieId.isin(mine.movieId)].groupby("tag")["movieId"].nunique()
+    keep = films[films >= ON_MINE].index
+    return sorted(t for t in keep if people[t] > MIN_PEOPLE)
+
+
+def write_users_csv(ratings, tags, movies, mine) -> pd.DataFrame:
+    """judge/users.csv: you, your GROUP most similar people, and your GROUP least similar
+    people above zero. Each description lists the movies a person shares with your twenty,
+    in the order of your slot, each with their stars and the (merged) tags they applied."""
+    sims = similarity(ratings, ME)
+    near = sims.sort_values(ascending=False).head(GROUP).index
+    far = sims[sims > 0].sort_values().head(GROUP).index
+    people = [(ME, "my own")] + [(u, "similar") for u in near] + [(u, "dissimilar") for u in far]
+    titles = movies.set_index("movieId")["title"]
+    order = list(mine.movieId)
+    g = tag_groups(tags).assign(movieId=tags["movieId"].to_numpy())
+    tag_list = "|".join(judged_tags(tags, mine))
+    rows = []
+    for user, label in people:
+        theirs = ratings[(ratings.userId == user) & ratings.movieId.isin(order)]
+        stars = dict(zip(theirs.movieId, theirs.rating))
+        applied = g[(g.userId == user) & g.movieId.isin(order)]
+        parts = []
+        for m in order:
+            if m not in stars:
+                continue
+            on_it = sorted(set(applied.loc[applied.movieId == m, "tag"]))
+            parts.append(f"{titles[m]} ({stars[m]:g}; tags: {', '.join(on_it) or 'none'})")
+        rows.append({"id": user, "description": f"label: {label}; movies: {', '.join(parts)}",
+                     "tags": tag_list})
+    out = pd.DataFrame(rows)
+    out.to_csv(USERS_CSV, index=False)
+    return out
+
+
 def part3_users(ratings, tags, movies, links):
     print("== (1) my ratings ==")
     mine, skipped = read_my_ratings()
@@ -167,6 +209,11 @@ def part3_users(ratings, tags, movies, links):
     for row in top.head(10).itertuples():
         print(f"{row.score:9.2f}  {row.tag}")
     print(f"{len(scores):,} rows over {scores.userId.nunique()} user(s)")
+
+    print("== (3) judge/users.csv ==")
+    users = write_users_csv(ratings, tags, movies, mine)
+    print(f"wrote {len(users)} people to {USERS_CSV.relative_to(REPO)}, "
+          f"{users.tags.iloc[0].count('|') + 1} tags each")
 
 
 if __name__ == "__main__":

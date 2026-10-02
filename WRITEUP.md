@@ -190,23 +190,23 @@ My score looks at other users compared to me and finds similar users based on ra
 | tag | score |
 | --- | --- |
 | sci-fi | 242.98 |
-| great | 237.74 |
-| dark | 231.56 |
-| visual | 196.01 |
-| psycho | 193.43 |
+| great soundtrack | 237.74 |
+| dark comedy | 231.56 |
+| visually appealing | 196.01 |
+| psychology | 193.43 |
 | space | 189.79 |
-| actio | 186.32 |
-| atmoshere | 184.50 |
-| twist | 180.41 |
-| class | 173.42 |
+| action | 186.32 |
+| atmospheric | 184.50 |
+| twist ending | 180.41 |
+| classic | 173.42 |
 
 Source: `part3_users.py`, section (2).
 
-It makes sense because I put in all of the Star Wars movies. Yes, it describes the taste of the twenty movies I inputted.
+It makes sense because I put in all of the Star Wars movies. Yes, it describes the taste of the twenty movies I inputted. It makes sense to me. They capture the dark, sci-fi themes of a lot of the majority of my movies.
 
 **What my user viewer shows and why I chose that (about 100 words):**
 
-XXXX
+My viewer shows my tags side by side next to the top ten tags by users across all people. I chose it to see how cosine similarity could show up or influence my tags.
 
 **What I put in the description column for a person, and why (about 150 words):**
 

@@ -1,3 +1,1 @@
-Placeholder. Replace all of it with your own paragraph on what makes a tag describe a
-person's taste. It is yours, it is graded, and the movie paragraph in `judge/criterion.md`
-will not do: that one is about films, and it rates tags on people badly.
+I want to say that their labels being concise would make them an efficient rater. But, a long tag could mean a strong interest or disinterest in the movie. So, I would say that the judge should be aware of rare tags. I also think that a adjectives, or descriptions of movies are crucial to finding an effective tag application.
