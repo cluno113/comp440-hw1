@@ -234,17 +234,17 @@ Give these to Claude the way you gave it the rest. Graded on the catch and the c
 making Claude look good or bad.
 
 **A moment where Claude was wrong or overconfident, how you caught it, and where it
-happened. Name the part and the step, so the moment can be found:** XXXX
+happened. Name the part and the step, so the moment can be found:** I caught it when it was suggesting things for me to input as criterion in the terminal. It was not a bad suggestion, but I feel like that was thinking I could have done on my part. Part 3, the criterion_users.md step!
 
-**One call where you overrode Claude, and why:** XXXX
+**One call where you overrode Claude, and why:** There were many points where I seem to have misunderstood what variables I was working with. Claude told me this: Part 3, the description slot. Claude said the descriptions contain no tag counts. I kept "considering tag counts." I misunderstood the description label.
 
-**What you would hand to Claude sooner next time:** XXXX
+**What you would hand to Claude sooner next time:** I would hand over to Claude understanding the makeup of the different variables the judge looked at versus my own wranglings (my score()) and such.
 
-**Did Claude name the misleading tag in Part 2 step 1 before you did? What happened:** XXXX
+**Did Claude name the misleading tag in Part 2 step 1 before you did? What happened:** No, I realized that Dirty Dancing is released in the 80s, but takes place in the 60s which makes it misleading.
 
 **The figure. Would asking Claude "what does this show?" have produced your sentence, and what
-would have been missing from it:** XXXX
+would have been missing from it:** No, asking you have not produced that sentence. It would have missed the fact that months and years were displayed in a confusing way where it was tagged by year, but the variable was named months.
 
-**Hours spent:** XXXX
+**Hours spent:** About 10 hours
 
-**Anyone who helped you, or "no one":** XXXX
+**Anyone who helped you, or "no one":** No one
